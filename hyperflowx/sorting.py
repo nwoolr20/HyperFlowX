@@ -6,10 +6,11 @@ import concurrent.futures
 @numba.njit
 def quantum_pivot(arr):
     """Selects a pivot using probability-weighted selection (Numba-compatible)."""
-    median = np.median(arr)
-    distances = np.abs(arr - median)
+    arr_np = np.asarray(arr)
+    median = np.median(arr_np)
+    distances = np.abs(arr_np - median)
     min_index = np.argmin(distances)  # Choose the element closest to the median
-    return arr[min_index]
+    return arr_np[min_index]
 
 # 🚀 Optimized Insertion Sort (for small arrays)
 @numba.njit
