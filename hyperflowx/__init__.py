@@ -1,11 +1,31 @@
 # hyperflowx/__init__.py
 
 from .sorting import hybrid_sort
-from .ml_model import train_hyperflowx
-from .optimizations import fast_matrix_mult
-from .pipeline import async_pipeline
-from .security import pascal_diamond_hash  # ✅ Added missing import
-from .ai_automation import automate_hyperflowx_fixes  # ✅ Added AI-powered automation
+from .ai_automation import automate_hyperflowx_fixes
+
+
+def train_hyperflowx(*args, **kwargs):
+    """Lazily import and invoke :func:`ml_model.train_hyperflowx`."""
+    from .ml_model import train_hyperflowx as _train
+    return _train(*args, **kwargs)
+
+
+def fast_matrix_mult(*args, **kwargs):
+    """Lazily import and invoke :func:`optimizations.fast_matrix_mult`."""
+    from .optimizations import fast_matrix_mult as _fast
+    return _fast(*args, **kwargs)
+
+
+def async_pipeline(*args, **kwargs):
+    """Lazily import and invoke :func:`pipeline.async_pipeline`."""
+    from .pipeline import async_pipeline as _pipeline
+    return _pipeline(*args, **kwargs)
+
+
+def pascal_diamond_hash(*args, **kwargs):
+    """Lazily import and invoke :func:`security.pascal_diamond_hash`."""
+    from .security import pascal_diamond_hash as _hash
+    return _hash(*args, **kwargs)
 
 __all__ = [
     "hybrid_sort",
