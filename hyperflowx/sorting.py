@@ -24,42 +24,16 @@ def insertion_sort(arr):
         arr[j + 1] = key
     return arr
 
-# 🚀 Optimized Parallel QuickSort
-def quicksort(arr):
-    """Optimized QuickSort with parallel execution."""
-    if len(arr) <= 10:
-        return insertion_sort(arr)
-    
-    pivot = quantum_pivot(arr)
-    left = [x for x in arr if x < pivot]
-    middle = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        left_future = executor.submit(quicksort, left)
-        right_future = executor.submit(quicksort, right)
-        return np.concatenate((left_future.result(), middle, right_future.result()))
-
-# 🚀 Optimized Parallel MergeSort
-def mergesort(arr):
-    """Optimized MergeSort with parallel execution."""
-    if len(arr) <= 1000:
-        return np.sort(arr)
-
-    mid = len(arr) // 2
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        left_future = executor.submit(mergesort, arr[:mid])
-        right_future = executor.submit(mergesort, arr[mid:])
-        left, right = left_future.result(), right_future.result()
-    
-    return np.concatenate((left, right))
-
-# 🚀 Hybrid Sort (Automatically Selects Best Method)
+# 🚀 Simple Optimized Sorting (avoiding complex Numba issues)
 def hybrid_sort(arr):
-    arr = np.array(arr)
-    if len(arr) < 1000:
+    """Optimized hybrid sorting algorithm."""
+    arr = np.array(arr, dtype=np.float64)
+    
+    # For very small arrays, use insertion sort
+    if len(arr) < 50:
         return insertion_sort(arr)
-    elif len(arr) < 10_000:
-        return quicksort(arr)
+    
+    # For larger arrays, use NumPy's highly optimized Timsort 
+    # (this is actually very fast and hard to beat)
     else:
-        return mergesort(arr)
+        return np.sort(arr)
