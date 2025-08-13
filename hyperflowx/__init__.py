@@ -11,8 +11,8 @@ def train_hyperflowx(*args, **kwargs):
 
 
 def fast_matrix_mult(*args, **kwargs):
-    """Lazily import and invoke :func:`optimizations.fast_matrix_mult`."""
-    from .optimizations import fast_matrix_mult as _fast
+    """Lazily import and invoke :func:`optimizations.adaptive_matrix_mult`."""
+    from .optimizations import adaptive_matrix_mult as _fast
     return _fast(*args, **kwargs)
 
 
