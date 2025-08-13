@@ -141,8 +141,10 @@ def hybrid_sort(arr):
     
     # Check if array contains only integers in reasonable range for radix sort
     int_arr = arr.astype(np.int64)
-    if np.allclose(arr, int_arr) and np.all(np.abs(int_arr) < 1000000):
-        # Use radix sort for integer data (can be faster than comparison sorts)
+    if (np.allclose(arr, int_arr) and 
+        np.all(np.abs(int_arr) < 1000000) and 
+        np.all(int_arr >= 0)):  # Radix sort only for non-negative integers
+        # Use radix sort for positive integer data (can be faster than comparison sorts)
         return radix_sort(arr.copy())
     
     # For general floating-point data, use dual-pivot quicksort
