@@ -123,16 +123,39 @@ def run_full_benchmark(save_file: str = "benchmark_results.json") -> Dict[str, A
 
     results: Dict[str, Any] = {}
 
-    # Sorting Benchmark
+    # JIT Warmup for HyperFlowX functions
+    print("⚙️  Warming up JIT compiled functions...")
+    warmup_arr = np.random.randint(0, 1000, 100).astype(np.float64)
+    warmup_matrix = np.random.rand(64, 64)
+    warmup_data = np.random.bytes(64)
+    
+    # Warmup sorting
+    hybrid_sort(warmup_arr.copy())
+    # Warmup matrix mult  
+    fast_matrix_mult(warmup_matrix, warmup_matrix)
+    # Warmup hashing
+    pascal_diamond_hash(warmup_data)
+    print("✅ JIT warmup complete\n")
+
+    # Sorting Benchmark (with proper warmup)
     arr = np.random.randint(0, 10000, 100000)
 
-    start = time.time()
-    np.sort(arr.copy())
-    numpy_time = time.time() - start
+    # Run multiple trials and average for more accurate results
+    trials = 5
+    
+    numpy_times = []
+    for _ in range(trials):
+        start = time.time()
+        np.sort(arr.copy())
+        numpy_times.append(time.time() - start)
+    numpy_time = sum(numpy_times) / len(numpy_times)
 
-    start = time.time()
-    hybrid_sort(arr.copy())
-    hfx_time = time.time() - start
+    hfx_times = []
+    for _ in range(trials):
+        start = time.time()
+        hybrid_sort(arr.copy())
+        hfx_times.append(time.time() - start)
+    hfx_time = sum(hfx_times) / len(hfx_times)
 
     results["sorting"] = {
         "numpy_time": numpy_time,
@@ -140,10 +163,10 @@ def run_full_benchmark(save_file: str = "benchmark_results.json") -> Dict[str, A
         "speed_boost": numpy_time / hfx_time if hfx_time > 0 else 0,
     }
 
-    print(f"🔹 Sorting Benchmark:")
+    print(f"🔹 Sorting Benchmark (avg of {trials} trials):")
     print(f"NumPy Sort: {numpy_time:.4f} sec")
     print(f"HyperFlowX Sort: {hfx_time:.4f} sec")
-    print(f"⚡ Speed Boost: {results['sorting']['speed_boost']:.2f}× Faster!\n")
+    print(f"⚡ Speed Boost: {results['sorting']['speed_boost']:.2f}× {'Faster' if results['sorting']['speed_boost'] > 1 else 'Slower'}!\n")
 
     # Machine Learning Benchmark
     X = np.random.rand(5000, 20)

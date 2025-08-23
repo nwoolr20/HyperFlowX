@@ -42,12 +42,17 @@ class ARMOptimizationResearcher:
             if platform.system() == 'Darwin':
                 info['is_apple_silicon'] = True
                 try:
-                    # Try to get more specific model info
-                    result = subprocess.run(['sysctl', '-n', 'machdep.cpu.brand_string'], 
-                                          capture_output=True, text=True)
+                    # Try to get more specific model info using safe subprocess execution
+                    result = subprocess.run(
+                        ['sysctl', '-n', 'machdep.cpu.brand_string'], 
+                        capture_output=True, text=True, timeout=5
+                    )
                     if result.returncode == 0:
-                        info['cpu_model'] = result.stdout.strip()
-                except:
+                        # Sanitize output to prevent injection
+                        cpu_model = result.stdout.strip()
+                        if cpu_model and len(cpu_model) < 256:  # Reasonable length limit
+                            info['cpu_model'] = cpu_model
+                except (subprocess.SubprocessError, subprocess.TimeoutExpired):
                     pass
             
             # Detect AWS Graviton (heuristic)
@@ -191,9 +196,11 @@ class ARMOptimizationResearcher:
         # Try to detect NEON support
         try:
             if platform.system() == 'Darwin':
-                # macOS - check sysctl
-                result = subprocess.run(['sysctl', '-n', 'hw.optional.neon'], 
-                                      capture_output=True, text=True)
+                # macOS - check sysctl with safe execution
+                result = subprocess.run(
+                    ['sysctl', '-n', 'hw.optional.neon'], 
+                    capture_output=True, text=True, timeout=5
+                )
                 if result.returncode == 0 and result.stdout.strip() == '1':
                     results['neon_available'] = True
                     results['detected_features'].append('NEON')

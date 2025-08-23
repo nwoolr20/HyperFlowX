@@ -187,6 +187,7 @@ def monitor_performance(
     operation_name: Optional[str] = None,
     include_args: bool = False,
     include_result: bool = False,
+    lightweight: bool = False,
 ) -> Callable:
     """Decorator to monitor function performance.
 
@@ -194,6 +195,7 @@ def monitor_performance(
         operation_name: Custom operation name (defaults to function name)
         include_args: Whether to log function arguments
         include_result: Whether to log function result type/size
+        lightweight: If True, only measure time without logging (for performance-critical functions)
 
     Returns:
         Decorated function
@@ -202,6 +204,16 @@ def monitor_performance(
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
+            if lightweight:
+                # Ultra-lightweight monitoring - just timing, no logging overhead
+                start_time = time.time()
+                result = func(*args, **kwargs)
+                duration = time.time() - start_time
+                # Store timing in a global dict for later retrieval if needed
+                _performance_cache[func.__name__] = duration
+                return result
+            
+            # Full monitoring with logging
             op_name = operation_name or f"{func.__module__}.{func.__name__}"
             logger = get_logger()
 
@@ -248,6 +260,10 @@ def monitor_performance(
         return wrapper
 
     return decorator
+
+
+# Global cache for lightweight performance monitoring
+_performance_cache: Dict[str, float] = {}
 
 
 @contextmanager

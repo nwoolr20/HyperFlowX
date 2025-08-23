@@ -2,19 +2,76 @@
 
 This module provides sophisticated caching mechanisms including LRU cache,
 persistent cache, and smart cache invalidation for computational results.
+
+Security: Uses JSON serialization instead of pickle to prevent code injection attacks.
 """
 
 import functools
 import hashlib
-import pickle
 import os
 import time
 import threading
 from typing import Dict, Any, Optional, Callable, Union, Tuple
 from collections import OrderedDict
 import json
+import numpy as np
 
 from .monitoring import log_info, log_warning, get_logger
+
+
+def _safe_serialize(obj: Any) -> str:
+    """Safely serialize objects to JSON, handling numpy types.
+    
+    Args:
+        obj: Object to serialize
+        
+    Returns:
+        JSON string representation
+        
+    Security Note:
+        Uses JSON instead of pickle to prevent code injection attacks.
+    """
+    def convert_numpy(o):
+        if isinstance(o, np.ndarray):
+            return {'__numpy_array__': True, 'data': o.tolist(), 'dtype': str(o.dtype)}
+        elif isinstance(o, (np.integer, np.floating)):
+            return o.item()
+        elif isinstance(o, np.bool_):
+            return bool(o)
+        return o
+    
+    return json.dumps(obj, default=convert_numpy, separators=(',', ':'))
+
+
+def _safe_deserialize(json_str: str) -> Any:
+    """Safely deserialize JSON, reconstructing numpy types.
+    
+    Args:
+        json_str: JSON string to deserialize
+        
+    Returns:
+        Deserialized object
+        
+    Security Note:
+        Only reconstructs safe data types, not arbitrary objects.
+    """
+    def convert_numpy(obj):
+        if isinstance(obj, dict) and obj.get('__numpy_array__'):
+            return np.array(obj['data'], dtype=obj['dtype'])
+        return obj
+    
+    data = json.loads(json_str)
+    
+    def recursive_convert(obj):
+        if isinstance(obj, dict):
+            if obj.get('__numpy_array__'):
+                return np.array(obj['data'], dtype=obj['dtype'])
+            return {k: recursive_convert(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [recursive_convert(item) for item in obj]
+        return obj
+    
+    return recursive_convert(data)
 
 
 class LRUCache:
@@ -113,12 +170,24 @@ class PersistentCache:
         self.logger = get_logger()
 
     def _get_cache_path(self, key: str) -> str:
-        """Get file path for cache key."""
+        """Get file path for cache key with path traversal protection."""
+        # Sanitize key to prevent path traversal attacks
+        safe_key = "".join(c for c in key if c.isalnum() or c in '-_.')
+        if not safe_key:
+            safe_key = hashlib.sha256(key.encode()).hexdigest()[:16]
+            
         # Use first 2 chars for subdirectory to avoid too many files in one dir
-        subdir = key[:2]
+        subdir = safe_key[:2]
         subdir_path = os.path.join(self.cache_dir, subdir)
+        
+        # Ensure we stay within cache directory (prevent path traversal)
+        subdir_path = os.path.abspath(subdir_path)
+        cache_dir_abs = os.path.abspath(self.cache_dir)
+        if not subdir_path.startswith(cache_dir_abs):
+            raise ValueError("Invalid cache path detected")
+            
         os.makedirs(subdir_path, exist_ok=True)
-        return os.path.join(subdir_path, f"{key}.cache")
+        return os.path.join(subdir_path, f"{safe_key}.cache")
 
     def _is_expired(self, filepath: str) -> bool:
         """Check if cache file is expired."""
@@ -136,9 +205,16 @@ class PersistentCache:
 
         Returns:
             Cached value or None if not found/expired
+            
+        Security Note:
+            Uses safe JSON deserialization instead of pickle.
         """
         with self.lock:
-            cache_path = self._get_cache_path(key)
+            try:
+                cache_path = self._get_cache_path(key)
+            except ValueError as e:
+                self.logger.warning(f"Invalid cache key {key}: {e}")
+                return None
 
             if not os.path.exists(cache_path):
                 return None
@@ -151,10 +227,15 @@ class PersistentCache:
                 return None
 
             try:
-                with open(cache_path, "rb") as f:
-                    return pickle.load(f)
-            except (pickle.PickleError, OSError) as e:
+                with open(cache_path, "r", encoding="utf-8") as f:
+                    return _safe_deserialize(f.read())
+            except (json.JSONDecodeError, OSError, ValueError) as e:
                 self.logger.warning(f"Failed to load cache entry {key}: {e}")
+                # Remove corrupted cache file
+                try:
+                    os.remove(cache_path)
+                except OSError:
+                    pass
                 return None
 
     def put(self, key: str, value: Any) -> None:
@@ -163,14 +244,21 @@ class PersistentCache:
         Args:
             key: Cache key
             value: Value to cache
+            
+        Security Note:
+            Uses safe JSON serialization instead of pickle.
         """
         with self.lock:
-            cache_path = self._get_cache_path(key)
+            try:
+                cache_path = self._get_cache_path(key)
+            except ValueError as e:
+                self.logger.warning(f"Invalid cache key {key}: {e}")
+                return
 
             try:
-                with open(cache_path, "wb") as f:
-                    pickle.dump(value, f)
-            except (pickle.PickleError, OSError) as e:
+                with open(cache_path, "w", encoding="utf-8") as f:
+                    f.write(_safe_serialize(value))
+            except (json.JSONEncodeError, OSError, ValueError) as e:
                 self.logger.warning(f"Failed to save cache entry {key}: {e}")
 
     def clear(self) -> None:
