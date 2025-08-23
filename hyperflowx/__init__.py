@@ -1,5 +1,7 @@
 # hyperflowx/__init__.py
+"""HyperFlowX: High-Performance Computing Library with AI-Powered Optimizations."""
 
+from .__version__ import __version__, __author__, __email__, __license__, __description__, __url__
 from .sorting import hybrid_sort
 from .ai_automation import automate_hyperflowx_fixes
 

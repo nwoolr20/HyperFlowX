@@ -44,7 +44,8 @@ def run_security():
     print(f"✅ Hashing Completed - SHA-256: {sha256_time:.6f} sec | Pascal-Diamond Hash: {pdh_time:.6f} sec")
 
 # 🚀 Main Execution
-if __name__ == "__main__":
+def main():
+    """Main entry point for HyperFlowX examples."""
     print("\n🚀 Running HyperFlowX Example...\n")
 
     # Load data
@@ -54,3 +55,6 @@ if __name__ == "__main__":
     run_sorting(arr)
     run_ml(X, y)
     run_security()
+
+if __name__ == "__main__":
+    main()

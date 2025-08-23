@@ -1,9 +1,29 @@
+"""Optimized matrix operations and numerical algorithms.
+
+This module provides high-performance matrix multiplication and linear algebra
+operations using Numba JIT compilation and parallel processing.
+"""
+
 import numpy as np
 import numba
+from typing import Union, Tuple
+
 
 # 🚀 Optimized Matrix Multiplication (Simplified for Numba compatibility)
 @numba.njit(parallel=True, fastmath=True, cache=True)
-def fast_matrix_mult(A, B):
+def fast_matrix_mult(A: np.ndarray, B: np.ndarray) -> np.ndarray:
+    """Perform fast matrix multiplication with optimizations.
+    
+    Args:
+        A: First matrix (m x k)
+        B: Second matrix (k x n)
+        
+    Returns:
+        Result matrix (m x n)
+        
+    Note:
+        Uses parallel processing and fast math optimizations for large matrices.
+    """
     """Perform fast matrix multiplication with optimizations."""
     n, k, m = A.shape[0], A.shape[1], B.shape[1]
     result = np.zeros((n, m), dtype=np.float64)
@@ -35,8 +55,24 @@ def fast_matrix_mult_small(A, B):
     return result
 
 # 🚀 Adaptive Matrix Multiplication
-def adaptive_matrix_mult(A, B):
-    """Choose the best matrix multiplication method based on size."""
+def adaptive_matrix_mult(A: Union[np.ndarray, list], B: Union[np.ndarray, list]) -> np.ndarray:
+    """Choose the best matrix multiplication method based on size.
+    
+    Automatically selects the optimal algorithm based on matrix dimensions:
+    - Small matrices: Simple implementation without parallel overhead
+    - Medium matrices: Parallel Numba implementation
+    - Large matrices: NumPy's optimized BLAS implementation
+    
+    Args:
+        A: First matrix (m x k)
+        B: Second matrix (k x n)
+        
+    Returns:
+        Result matrix (m x n)
+        
+    Raises:
+        ValueError: If matrix dimensions are incompatible
+    """
     A = np.asarray(A, dtype=np.float64)
     B = np.asarray(B, dtype=np.float64)
     

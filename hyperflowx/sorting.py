@@ -1,9 +1,28 @@
+"""High-performance sorting algorithms with adaptive selection.
+
+This module provides optimized sorting implementations using Numba JIT compilation
+and intelligent algorithm selection based on data characteristics.
+"""
+
 import numpy as np
 import numba
+from typing import Union
+
 
 # 🚀 Optimized Insertion Sort (for small arrays)
 @numba.njit
-def insertion_sort(arr):
+def insertion_sort(arr: np.ndarray) -> np.ndarray:
+    """Optimized insertion sort for small arrays.
+    
+    Args:
+        arr: Input array to sort
+        
+    Returns:
+        Sorted array
+        
+    Note:
+        Most efficient for arrays with < 50 elements.
+    """
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1
