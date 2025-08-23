@@ -219,5 +219,9 @@ def run_full_benchmark(save_file="benchmark_results.json"):
     save_benchmark_results(results, save_file)
     return results
 
-if __name__ == "__main__":
+def main():
+    """Main entry point for benchmark CLI."""
     run_full_benchmark()
+
+if __name__ == "__main__":
+    main()
