@@ -139,23 +139,15 @@ def counting_sort_by_digit(arr: np.ndarray, exp: int) -> None:
         arr[i] = output[i]
 
 
-# 🚀 Intelligent Hybrid Sorting Algorithm
-@monitor_performance(
-    operation_name="hybrid_sort", include_args=True, include_result=True
-)
+# 🚀 Intelligent Hybrid Sorting Algorithm (Optimized)
 def hybrid_sort(arr: Union[np.ndarray, list]) -> np.ndarray:
     """
-    Native HyperFlowX sorting algorithm.
+    Native HyperFlowX sorting algorithm with optimized path selection.
 
     Philosophy: This implementation prioritizes native algorithms over NumPy dependencies.
-    While NumPy's Timsort is highly optimized C code that's difficult to beat in raw speed,
-    HyperFlowX provides:
-    1. Pure Python/Numba implementation (no C dependencies)
-    2. Intelligent algorithm selection based on data characteristics
-    3. Specialized optimizations for different data patterns
-    4. Full control over memory allocation and algorithm behavior
+    Optimized for speed by minimizing expensive data type checks.
 
-    Performance: Competitive with NumPy while maintaining algorithmic independence.
+    Performance: Designed to be competitive with NumPy through efficient algorithm selection.
     """
     arr = cast(np.ndarray, np.array(arr, dtype=np.float64))
     n = len(arr)
@@ -167,22 +159,20 @@ def hybrid_sort(arr: Union[np.ndarray, list]) -> np.ndarray:
     if n < 50:
         return insertion_sort(arr.copy())  # type: ignore[no-any-return]
 
-    # Check if array contains only integers in reasonable range for radix sort
-    int_arr: np.ndarray = arr.astype(np.int64)
-    if (
-        np.allclose(arr, int_arr)
-        and np.all(np.abs(int_arr) < 1000000)
-        and np.all(int_arr >= 0)
-    ):  # Radix sort only for non-negative integers
-        # Use radix sort for positive integer data (can be faster than comparison sorts)
-        return radix_sort(arr.copy())  # type: ignore[no-any-return]
+    # Quick integer check - only for small arrays where it's worth it
+    if n < 10000:
+        # Check if array contains only small positive integers (fast path for radix sort)
+        arr_min = np.min(arr)
+        arr_max = np.max(arr)
+        if arr_min >= 0 and arr_max < 100000 and np.all(arr == arr.astype(np.int64)):
+            # Use radix sort for positive integer data
+            return radix_sort(arr.copy())  # type: ignore[no-any-return]
 
-    # For general floating-point data, use dual-pivot quicksort
-    # This provides O(n log n) performance with good constant factors
-    else:
-        arr_copy = arr.copy()
-        dual_pivot_quicksort(arr_copy, 0, n - 1)
-        return arr_copy
+    # For general data or large arrays, use dual-pivot quicksort
+    # Skip expensive checks for large arrays - just use the fastest general algorithm
+    arr_copy = arr.copy()
+    dual_pivot_quicksort(arr_copy, 0, n - 1)
+    return arr_copy
 
 
 # 🚀 Alternative: Hybrid with Adaptive Fallback (for maximum performance when needed)
