@@ -9,10 +9,11 @@ from hyperflowx.ml_model import train_hyperflowx
 from hyperflowx.optimizations import fast_matrix_mult
 from hyperflowx.security import pascal_diamond_hash
 
+
 # 🚀 Asynchronous Pipeline Execution
 async def async_pipeline() -> None:
     """Runs sorting, ML, security, and optimization tasks in parallel."""
-    
+
     # 🔹 Define async tasks
     async def sorting_task(arr: np.ndarray) -> np.ndarray:
         return hybrid_sort(arr)
@@ -40,10 +41,11 @@ async def async_pipeline() -> None:
         sorting_task(arr),
         ml_task(X, y),
         security_check_task(security_data),
-        background_optimization_task(A, B)
+        background_optimization_task(A, B),
     )
 
     print("✅ Sorting + ML + Security + Optimization completed in parallel!")
+
 
 # 🚀 Run the async pipeline
 if __name__ == "__main__":
