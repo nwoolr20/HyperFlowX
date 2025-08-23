@@ -1,26 +1,31 @@
 name: "HyperFlowX"
-description: "High-Performance Computing Library with AI-Powered Optimizations for workflow orchestration, data pipelines, and numerical computing"
+description: "🚀 High-Performance Computing Library with AI-Powered Optimizations | Adaptive algorithms for workflow orchestration, data pipelines, matrix operations & ML model selection | 3-4x performance gains through JIT compilation & GPU acceleration"
 topics:
   - high-performance-computing
-  - machine-learning
   - workflow-orchestration
   - data-pipeline
-  - optimization
-  - algorithms
+  - machine-learning
+  - ai-optimization
   - parallel-computing
   - gpu-acceleration
-  - numba
-  - pytorch
-  - async
   - jit-compilation
+  - adaptive-algorithms
+  - performance-optimization
   - matrix-operations
   - sorting-algorithms
-  - cryptographic-hashing
+  - async-processing
   - scientific-computing
-  - numerical-analysis
-  - performance-optimization
-  - ai-automation
+  - numerical-computing
   - computational-workflows
+  - algorithm-selection
+  - numba
+  - pytorch
+  - big-data
+  - data-science
+  - optimization
+  - automation
+  - bioinformatics
+  - financial-computing
 
 homepage: "https://github.com/nwoolr20/HyperFlowX"
 

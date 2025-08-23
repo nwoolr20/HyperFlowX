@@ -2,7 +2,10 @@
 """HyperFlowX: High-Performance Computing Library with AI-Powered Optimizations."""
 
 from typing import Any
-from .__version__ import __version__, __author__, __email__, __license__, __description__, __url__
+from .__version__ import (
+    __version__, __author__, __email__, __license__, __description__, __url__,
+    __summary__, __domain__, __primary_use_cases__
+)
 from .sorting import hybrid_sort
 from .ai_automation import automate_hyperflowx_fixes
 
