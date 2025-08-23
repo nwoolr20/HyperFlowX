@@ -398,6 +398,39 @@ HyperFlowX employs several optimization techniques:
 4. **Adaptive Algorithms**: Dynamic selection based on input characteristics
 5. **Memory Optimization**: Efficient data structures and minimal copying
 
+## 🔒 Security
+
+HyperFlowX prioritizes security alongside performance:
+
+### Security Features
+- **Safe Serialization**: Uses JSON instead of pickle to prevent code injection
+- **Cryptographic Functions**: Secure hash functions (`secure_hash()`, `secure_hmac()`)
+- **Input Validation**: Protects against path traversal and subprocess injection
+- **Secure Random**: Cryptographically secure key generation
+
+### Security Best Practices
+```python
+# ✅ Use secure functions for cryptographic operations
+from hyperflowx.security import secure_hash, secure_hmac, generate_secure_key
+
+# Secure hashing
+secure_digest = secure_hash(sensitive_data, algorithm="sha256")
+
+# Message authentication  
+key = generate_secure_key(32)
+auth_code = secure_hmac(message, key)
+
+# ⚠️ Performance functions are NOT cryptographically secure
+# Only use for benchmarking, never for security-critical applications
+fast_hash = pascal_diamond_hash(data)  # Fast but insecure
+```
+
+### Security Audit (2024)
+- **Vulnerability Assessment**: Comprehensive security review completed
+- **Code Injection**: Eliminated pickle deserialization vulnerabilities
+- **Input Validation**: All user inputs validated and sanitized
+- **Subprocess Security**: Safe execution with timeouts and input validation
+
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for detailed information on:
