@@ -9,7 +9,7 @@
 
 ## 📋 Quick Summary
 
-**HyperFlowX** is a cutting-edge computational library that revolutionizes high-performance computing through intelligent, AI-driven optimizations. It automatically selects the best algorithms for your data, delivers 3-4x performance improvements, and orchestrates complex workflows with asynchronous execution.
+**HyperFlowX** is a computational library for high-performance computing that automatically selects the best algorithms for your data, delivers 3-4x performance improvements, and orchestrates complex workflows with asynchronous execution.
 
 ### 🎯 **What HyperFlowX Does**
 - **Intelligent Algorithm Selection**: Automatically chooses optimal sorting, ML, and matrix algorithms based on your data characteristics
