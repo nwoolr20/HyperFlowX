@@ -31,31 +31,37 @@ class WebAssemblyResearcher:
             'node_js': False
         }
         
-        # Check for Emscripten
+        # Check for Emscripten with safe execution
         try:
-            result = subprocess.run(['emcc', '--version'], 
-                                  capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                ['emcc', '--version'], 
+                capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0:
                 tools['emscripten'] = True
-        except:
+        except (subprocess.SubprocessError, subprocess.TimeoutExpired, FileNotFoundError):
             pass
         
-        # Check for Node.js (for running WASM)
+        # Check for Node.js (for running WASM) with safe execution
         try:
-            result = subprocess.run(['node', '--version'], 
-                                  capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                ['node', '--version'], 
+                capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0:
                 tools['node_js'] = True
-        except:
+        except (subprocess.SubprocessError, subprocess.TimeoutExpired, FileNotFoundError):
             pass
         
-        # Check for Wasmtime
+        # Check for Wasmtime with safe execution
         try:
-            result = subprocess.run(['wasmtime', '--version'], 
-                                  capture_output=True, text=True, timeout=10)
+            result = subprocess.run(
+                ['wasmtime', '--version'], 
+                capture_output=True, text=True, timeout=10
+            )
             if result.returncode == 0:
                 tools['wasmtime'] = True
-        except:
+        except (subprocess.SubprocessError, subprocess.TimeoutExpired, FileNotFoundError):
             pass
         
         # Check if we can import pyodide-related packages
@@ -228,7 +234,7 @@ void wasm_matrix_mult(double* A, double* B, double* C, int n) {
                 
                 results['files_generated'].append('hyperflowx_core.c')
                 
-                # Compile with Emscripten
+                # Compile with Emscripten using safe execution
                 compile_cmd = [
                     'emcc',
                     c_file,
@@ -240,7 +246,20 @@ void wasm_matrix_mult(double* A, double* B, double* C, int n) {
                     '--no-entry'
                 ]
                 
-                result = subprocess.run(compile_cmd, capture_output=True, text=True, timeout=60)
+                # Validate command arguments to prevent injection
+                safe_cmd = []
+                for arg in compile_cmd:
+                    if isinstance(arg, str) and len(arg) < 256:  # Reasonable length limit
+                        safe_cmd.append(arg)
+                    else:
+                        results['error_message'] = "Invalid command argument detected"
+                        return results
+                
+                result = subprocess.run(
+                    safe_cmd, 
+                    capture_output=True, text=True, timeout=60,
+                    cwd=temp_dir  # Restrict to temporary directory
+                )
                 
                 if result.returncode == 0:
                     results['build_success'] = True

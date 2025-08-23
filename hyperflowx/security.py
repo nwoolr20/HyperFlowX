@@ -1,12 +1,95 @@
 """Cryptographic hashing functions optimized for performance.
 
-This module provides custom hashing algorithms including the Pascal-Diamond
-hash function designed for high-performance applications.
+This module provides both secure cryptographic hashing and performance-optimized
+hash functions. Use secure functions for security-critical applications.
 """
 
 import numpy as np
 import numba
+import hashlib
+import hmac
+import secrets
 from typing import Union
+
+# Security: Provide both secure and performance-optimized options
+
+
+def secure_hash(data: Union[bytes, np.ndarray], algorithm: str = "sha256") -> str:
+    """Cryptographically secure hash function.
+    
+    Args:
+        data: Input data to hash
+        algorithm: Hash algorithm ('sha256', 'sha512', 'blake2b')
+        
+    Returns:
+        Hexadecimal string representation of the secure hash
+        
+    Security Note:
+        This provides cryptographic security suitable for sensitive applications.
+        Use this instead of pascal_diamond_hash for security-critical operations.
+    """
+    if isinstance(data, np.ndarray):
+        data = data.tobytes()
+    elif not isinstance(data, bytes):
+        data = bytes(data)
+    
+    if algorithm == "sha256":
+        return hashlib.sha256(data).hexdigest()
+    elif algorithm == "sha512":
+        return hashlib.sha512(data).hexdigest()
+    elif algorithm == "blake2b":
+        return hashlib.blake2b(data).hexdigest()
+    else:
+        raise ValueError(f"Unsupported hash algorithm: {algorithm}")
+
+
+def secure_hmac(data: Union[bytes, np.ndarray], key: Union[bytes, str], algorithm: str = "sha256") -> str:
+    """Cryptographically secure HMAC function.
+    
+    Args:
+        data: Input data to authenticate
+        key: Secret key for HMAC
+        algorithm: Hash algorithm ('sha256', 'sha512')
+        
+    Returns:
+        Hexadecimal string representation of the HMAC
+        
+    Security Note:
+        Provides message authentication and integrity verification.
+    """
+    if isinstance(data, np.ndarray):
+        data = data.tobytes()
+    elif not isinstance(data, bytes):
+        data = bytes(data)
+        
+    if isinstance(key, str):
+        key = key.encode('utf-8')
+        
+    if algorithm == "sha256":
+        return hmac.new(key, data, hashlib.sha256).hexdigest()
+    elif algorithm == "sha512":
+        return hmac.new(key, data, hashlib.sha512).hexdigest()
+    else:
+        raise ValueError(f"Unsupported HMAC algorithm: {algorithm}")
+
+
+def generate_secure_key(length: int = 32) -> bytes:
+    """Generate cryptographically secure random key.
+    
+    Args:
+        length: Key length in bytes
+        
+    Returns:
+        Cryptographically secure random bytes
+        
+    Security Note:
+        Uses the system's secure random number generator.
+    """
+    return secrets.token_bytes(length)
+
+
+# Performance-optimized hash functions (NOT cryptographically secure)
+# Use these only for performance benchmarking and non-security applications
 
 
 # JIT-compiled hash computation for maximum performance
@@ -87,8 +170,11 @@ def _fast_tiny_hash(data: Union[bytes, np.ndarray]) -> str:
 def pascal_diamond_hash(data: Union[bytes, np.ndarray]) -> str:
     """Hash data using ultra-optimized Pascal-Diamond weighting.
 
+    ⚠️  SECURITY WARNING: This is NOT cryptographically secure!
+    
     The Pascal-Diamond hash uses weighted accumulation with JIT compilation
-    to achieve performance equal to or better than SHA-256.
+    to achieve performance equal to or better than SHA-256, but it is NOT
+    suitable for security applications.
 
     Args:
         data: Input data to hash (bytes or numpy array)
@@ -96,9 +182,14 @@ def pascal_diamond_hash(data: Union[bytes, np.ndarray]) -> str:
     Returns:
         Hexadecimal string representation of the hash
 
-    Note:
-        This is a custom hash function optimized for performance benchmarking.
-        For cryptographic security, use established algorithms like SHA-256.
+    Security Note:
+        This is a custom hash function optimized for performance benchmarking ONLY.
+        It has weak collision resistance and is vulnerable to attacks.
+        For cryptographic security, use secure_hash() or secure_hmac() instead.
+        
+    Performance Note:
+        Designed to outperform SHA-256 in benchmark comparisons through
+        minimal computation and strategic sampling.
     """
     # For small-to-medium data, use pure Python for maximum speed
     # For very large data, use JIT compilation
