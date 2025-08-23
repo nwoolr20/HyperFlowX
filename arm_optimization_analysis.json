@@ -1,0 +1,135 @@
+{
+  "system_info": {
+    "platform": "Linux-6.11.0-1018-azure-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "architecture": [
+      "64bit",
+      "ELF"
+    ],
+    "is_arm": false,
+    "is_apple_silicon": false,
+    "is_graviton": false
+  },
+  "timestamp": 1755964744.78885,
+  "numpy_analysis": {
+    "numpy_version": "2.2.6",
+    "blas_info": {},
+    "performance_tests": {
+      "matmul_100x100": {
+        "avg_time": 0.0001529852549235026,
+        "gflops": 13.073155324675325
+      },
+      "matmul_500x500": {
+        "avg_time": 0.0017142295837402344,
+        "gflops": 145.83810848400557
+      },
+      "matmul_1000x1000": {
+        "avg_time": 0.011182149251302084,
+        "gflops": 178.85649306345235
+      },
+      "matmul_2000x2000": {
+        "avg_time": 0.08401028315226237,
+        "gflops": 190.45287552478774
+      }
+    }
+  },
+  "numba_analysis": {
+    "numba_version": "0.61.2",
+    "target_info": {
+      "target": "None",
+      "features": "None"
+    },
+    "compilation_tests": {
+      "basic_loop": {
+        "compilation_time": 0.35871362686157227,
+        "result_valid": "True"
+      }
+    },
+    "performance_tests": {
+      "matrix_64x64": {
+        "numba_time": 0.2810068130493164,
+        "numpy_time": 3.218650817871094e-05,
+        "speedup": 0.00011453995662753642,
+        "results_match": true
+      },
+      "matrix_128x128": {
+        "numba_time": 0.002630949020385742,
+        "numpy_time": 0.00011229515075683594,
+        "speedup": 0.04268237426370639,
+        "results_match": true
+      },
+      "matrix_256x256": {
+        "numba_time": 0.023203611373901367,
+        "numpy_time": 0.00029349327087402344,
+        "speedup": 0.012648603105124175,
+        "results_match": true
+      }
+    }
+  },
+  "simd_investigation": {
+    "detected_features": [],
+    "neon_available": false,
+    "sve_available": false,
+    "note": "Not an ARM system"
+  },
+  "memory_benchmarks": {
+    "sequential_access": {
+      "size_1024": {
+        "time": 0.00019288063049316406,
+        "bandwidth_gb_s": 0.02123593224227441
+      },
+      "size_4096": {
+        "time": 0.0007805824279785156,
+        "bandwidth_gb_s": 0.020989455325595603
+      },
+      "size_16384": {
+        "time": 0.0031027793884277344,
+        "bandwidth_gb_s": 0.021121707925618564
+      },
+      "size_65536": {
+        "time": 0.012560606002807617,
+        "bandwidth_gb_s": 0.020870330614733406
+      }
+    },
+    "random_access": {
+      "size_1024": {
+        "time": 0.0002703666687011719,
+        "bandwidth_gb_s": 0.015149796458553792
+      },
+      "size_4096": {
+        "time": 0.0010762214660644531,
+        "bandwidth_gb_s": 0.01522363241825432
+      },
+      "size_16384": {
+        "time": 0.0043070316314697266,
+        "bandwidth_gb_s": 0.015216047990257404
+      },
+      "size_65536": {
+        "time": 0.01720881462097168,
+        "bandwidth_gb_s": 0.015233123592402222
+      }
+    },
+    "strided_access": {
+      "size_1024_stride_16": {
+        "time": 1.3589859008789062e-05,
+        "elements_accessed": 64
+      },
+      "size_4096_stride_64": {
+        "time": 1.3589859008789062e-05,
+        "elements_accessed": 64
+      },
+      "size_16384_stride_256": {
+        "time": 1.33514404296875e-05,
+        "elements_accessed": 64
+      },
+      "size_65536_stride_1024": {
+        "time": 1.3589859008789062e-05,
+        "elements_accessed": 64
+      }
+    }
+  },
+  "recommendations": [
+    "\ud83d\udd0d Not an ARM system - ARM optimizations not applicable"
+  ]
+}

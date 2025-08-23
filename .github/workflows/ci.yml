@@ -58,6 +58,12 @@ jobs:
       run: |
         python hyperflowx/benchmark.py
     
+    - name: Performance regression detection
+      run: |
+        python performance_regression_check.py
+      env:
+        PERFORMANCE_BASELINE_FILE: performance_baseline.json
+    
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:

@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from typing import Union, Any, Tuple
+from typing import Union, Any, Tuple, cast
 
 
 # 🚀 Simple Neural Network
@@ -75,29 +75,33 @@ def train_hyperflowx(
         Model selection is based on feature count. For production use,
         consider cross-validation and performance-based selection.
     """
+    # Convert inputs to numpy arrays for consistent handling
+    X = cast(np.ndarray, np.asarray(X))
+    y = cast(np.ndarray, np.asarray(y))
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # 🔹 If dataset is small, use **XGBoost**
     if X.shape[1] <= 50:
-        model = xgb.XGBRegressor(n_estimators=100, learning_rate=0.1, max_depth=6)
-        model.fit(X_train, y_train)
-        return model
+        xgb_model = xgb.XGBRegressor(n_estimators=100, learning_rate=0.1, max_depth=6)
+        xgb_model.fit(X_train, y_train)
+        return xgb_model
 
     # 🔹 Otherwise, use a **Neural Network**
     device = "cuda" if use_cuda and torch.cuda.is_available() else "cpu"
-    model = NeuralNet(X.shape[1]).to(device)
+    nn_model = NeuralNet(X.shape[1]).to(device)
 
     X_train = torch.tensor(X_train, dtype=torch.float32).to(device)
     y_train = torch.tensor(y_train, dtype=torch.float32).view(-1, 1).to(device)
 
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(nn_model.parameters(), lr=0.01)
     loss_fn = nn.MSELoss()
 
     for _ in range(100):  # 🔹 Small fixed training loop
         optimizer.zero_grad()
-        predictions = model(X_train)
+        predictions = nn_model(X_train)
         loss = loss_fn(predictions, y_train)
         loss.backward()
         optimizer.step()
 
-    return model
+    return nn_model

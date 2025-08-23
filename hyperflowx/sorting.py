@@ -6,11 +6,12 @@ and intelligent algorithm selection based on data characteristics.
 
 import numpy as np
 import numba
-from typing import Union
+from typing import Union, cast
+from .monitoring import monitor_performance, log_info
 
 
 # 🚀 Optimized Insertion Sort (for small arrays)
-@numba.njit
+@numba.njit  # type: ignore[misc]
 def insertion_sort(arr: np.ndarray) -> np.ndarray:
     """Optimized insertion sort for small arrays.
     
@@ -33,8 +34,8 @@ def insertion_sort(arr: np.ndarray) -> np.ndarray:
     return arr
 
 # 🚀 Ultra-Fast Dual-Pivot QuickSort (Numba-Optimized)
-@numba.njit
-def dual_pivot_quicksort(arr, left, right):
+@numba.njit  # type: ignore[misc]
+def dual_pivot_quicksort(arr: np.ndarray, left: int, right: int) -> None:
     """Dual-pivot quicksort - faster than single-pivot for larger arrays."""
     if right - left < 17:  # Use insertion sort for small subarrays
         insertion_sort_range(arr, left, right)
@@ -71,8 +72,8 @@ def dual_pivot_quicksort(arr, left, right):
     dual_pivot_quicksort(arr, lt, gt)
     dual_pivot_quicksort(arr, gt + 2, right)
 
-@numba.njit
-def insertion_sort_range(arr, left, right):
+@numba.njit  # type: ignore[misc]
+def insertion_sort_range(arr: np.ndarray, left: int, right: int) -> None:
     """Insertion sort for a specific range."""
     for i in range(left + 1, right + 1):
         key = arr[i]
@@ -83,8 +84,8 @@ def insertion_sort_range(arr, left, right):
         arr[j + 1] = key
 
 # 🚀 Radix Sort for Integer Arrays (Ultra-Fast for specific cases)
-@numba.njit
-def radix_sort(arr):
+@numba.njit  # type: ignore[misc]
+def radix_sort(arr: np.ndarray) -> np.ndarray:
     """High-speed radix sort for positive integers."""
     if len(arr) <= 1:
         return arr
@@ -93,7 +94,7 @@ def radix_sort(arr):
     int_arr = np.asarray(arr, dtype=np.int64)
     
     # Find the maximum number to know number of digits
-    max_num = np.max(np.abs(int_arr))
+    max_num: int = np.max(np.abs(int_arr))
     if max_num == 0:
         return arr.astype(np.float64)
     
@@ -103,10 +104,10 @@ def radix_sort(arr):
         counting_sort_by_digit(int_arr, exp)
         exp *= 10
     
-    return int_arr.astype(np.float64)
+    return int_arr.astype(np.float64)  # type: ignore[no-any-return]
 
-@numba.njit
-def counting_sort_by_digit(arr, exp):
+@numba.njit  # type: ignore[misc]
+def counting_sort_by_digit(arr: np.ndarray, exp: int) -> None:
     """Counting sort by a specific digit."""
     n = len(arr)
     output = np.zeros(n, dtype=np.int64)
@@ -114,7 +115,7 @@ def counting_sort_by_digit(arr, exp):
     
     # Store count of occurrences
     for i in range(n):
-        index = (abs(arr[i]) // exp) % 10
+        index: int = int((abs(arr[i]) // exp) % 10)
         count[index] += 1
     
     # Change count[i] so it contains actual position
@@ -124,7 +125,7 @@ def counting_sort_by_digit(arr, exp):
     # Build the output array
     i = n - 1
     while i >= 0:
-        index = (abs(arr[i]) // exp) % 10
+        index = int((abs(arr[i]) // exp) % 10)
         output[count[index] - 1] = arr[i]
         count[index] -= 1
         i -= 1
@@ -134,7 +135,8 @@ def counting_sort_by_digit(arr, exp):
         arr[i] = output[i]
 
 # 🚀 Intelligent Hybrid Sorting Algorithm  
-def hybrid_sort(arr):
+@monitor_performance(operation_name="hybrid_sort", include_args=True, include_result=True)
+def hybrid_sort(arr: Union[np.ndarray, list]) -> np.ndarray:
     """
     Native HyperFlowX sorting algorithm.
     
@@ -148,7 +150,7 @@ def hybrid_sort(arr):
     
     Performance: Competitive with NumPy while maintaining algorithmic independence.
     """
-    arr = np.array(arr, dtype=np.float64)
+    arr = cast(np.ndarray, np.array(arr, dtype=np.float64))
     n = len(arr)
     
     if n <= 1:
@@ -156,15 +158,15 @@ def hybrid_sort(arr):
     
     # For very small arrays, use insertion sort (fastest for small data)
     if n < 50:
-        return insertion_sort(arr.copy())
+        return insertion_sort(arr.copy())  # type: ignore[no-any-return]
     
     # Check if array contains only integers in reasonable range for radix sort
-    int_arr = arr.astype(np.int64)
+    int_arr: np.ndarray = arr.astype(np.int64)
     if (np.allclose(arr, int_arr) and 
         np.all(np.abs(int_arr) < 1000000) and 
         np.all(int_arr >= 0)):  # Radix sort only for non-negative integers
         # Use radix sort for positive integer data (can be faster than comparison sorts)
-        return radix_sort(arr.copy())
+        return radix_sort(arr.copy())  # type: ignore[no-any-return]
     
     # For general floating-point data, use dual-pivot quicksort
     # This provides O(n log n) performance with good constant factors
@@ -174,7 +176,8 @@ def hybrid_sort(arr):
         return arr_copy
 
 # 🚀 Alternative: Hybrid with Adaptive Fallback (for maximum performance when needed)
-def adaptive_sort(arr, allow_numpy_fallback=False):
+@monitor_performance(operation_name="adaptive_sort", include_args=True, include_result=True)
+def adaptive_sort(arr: Union[np.ndarray, list], allow_numpy_fallback: bool = False) -> np.ndarray:
     """
     Adaptive sorting with optional NumPy fallback for maximum performance.
     
@@ -183,7 +186,7 @@ def adaptive_sort(arr, allow_numpy_fallback=False):
         allow_numpy_fallback: If True, use NumPy for very large arrays where 
                             raw performance is more important than algorithmic purity
     """
-    arr = np.array(arr, dtype=np.float64)
+    arr = cast(np.ndarray, np.array(arr, dtype=np.float64))
     n = len(arr)
     
     if n <= 1:
@@ -196,7 +199,7 @@ def adaptive_sort(arr, allow_numpy_fallback=False):
     # For very large arrays, user can choose performance vs purity
     elif allow_numpy_fallback:
         # Acknowledge the trade-off: performance vs algorithmic independence
-        return np.sort(arr)  
+        return np.sort(arr)  # type: ignore[no-any-return]  
     else:
         # Stay true to native implementation
         return hybrid_sort(arr)
