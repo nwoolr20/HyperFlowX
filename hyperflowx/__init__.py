@@ -30,11 +30,26 @@ def pascal_diamond_hash(*args: Any, **kwargs: Any) -> Any:
     from .security import pascal_diamond_hash as _hash
     return _hash(*args, **kwargs)
 
+# Import monitoring utilities for easy access
+from .monitoring import (
+    configure_logging,
+    get_performance_metrics,
+    save_performance_metrics,
+    monitor_performance,
+    performance_context
+)
+
 __all__ = [
     "hybrid_sort",
-    "train_hyperflowx",
+    "train_hyperflowx", 
     "fast_matrix_mult",
     "async_pipeline",
     "pascal_diamond_hash",
-    "automate_hyperflowx_fixes"  # ✅ Now available for easy import
+    "automate_hyperflowx_fixes",
+    # Monitoring utilities
+    "configure_logging",
+    "get_performance_metrics",
+    "save_performance_metrics",
+    "monitor_performance",
+    "performance_context"
 ]

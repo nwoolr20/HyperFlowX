@@ -7,6 +7,7 @@ operations using Numba JIT compilation and parallel processing.
 import numpy as np
 import numba
 from typing import Union, Tuple, cast
+from .monitoring import monitor_performance, log_info
 
 
 # 🚀 Optimized Matrix Multiplication (Simplified for Numba compatibility)
@@ -55,6 +56,7 @@ def fast_matrix_mult_small(A: np.ndarray, B: np.ndarray) -> np.ndarray:
     return result  # type: ignore[no-any-return]
 
 # 🚀 Adaptive Matrix Multiplication
+@monitor_performance(operation_name="matrix_multiplication", include_args=True, include_result=True)
 def adaptive_matrix_mult(A: Union[np.ndarray, list], B: Union[np.ndarray, list]) -> np.ndarray:
     """Choose the best matrix multiplication method based on size.
     

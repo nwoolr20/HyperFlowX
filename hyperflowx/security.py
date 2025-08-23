@@ -31,6 +31,6 @@ def pascal_diamond_hash(data: Union[bytes, np.ndarray]) -> str:
     hash_val: int = 0
     
     for i in range(len(data)):
-        hash_val = int((hash_val + (data[i] * (i + 1))) % prime_mod)
+        hash_val = int((hash_val + (int(data[i]) * (i + 1))) % prime_mod)
     
     return format(hash_val & 0xFFFFFFFFFFFFFFFF, "x")

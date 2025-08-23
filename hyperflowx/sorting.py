@@ -7,6 +7,7 @@ and intelligent algorithm selection based on data characteristics.
 import numpy as np
 import numba
 from typing import Union, cast
+from .monitoring import monitor_performance, log_info
 
 
 # 🚀 Optimized Insertion Sort (for small arrays)
@@ -134,6 +135,7 @@ def counting_sort_by_digit(arr: np.ndarray, exp: int) -> None:
         arr[i] = output[i]
 
 # 🚀 Intelligent Hybrid Sorting Algorithm  
+@monitor_performance(operation_name="hybrid_sort", include_args=True, include_result=True)
 def hybrid_sort(arr: Union[np.ndarray, list]) -> np.ndarray:
     """
     Native HyperFlowX sorting algorithm.
@@ -174,6 +176,7 @@ def hybrid_sort(arr: Union[np.ndarray, list]) -> np.ndarray:
         return arr_copy
 
 # 🚀 Alternative: Hybrid with Adaptive Fallback (for maximum performance when needed)
+@monitor_performance(operation_name="adaptive_sort", include_args=True, include_result=True)
 def adaptive_sort(arr: Union[np.ndarray, list], allow_numpy_fallback: bool = False) -> np.ndarray:
     """
     Adaptive sorting with optional NumPy fallback for maximum performance.
