@@ -28,9 +28,9 @@ def pascal_diamond_hash(data: Union[bytes, np.ndarray]) -> str:
     """
     """Hash data using optimized Pascal-Diamond weighting."""
     prime_mod = 2**61 - 1  # Large prime for hashing
-    hash_val = 0
+    hash_val: int = 0
     
     for i in range(len(data)):
-        hash_val = (hash_val + (data[i] * (i + 1))) % prime_mod
+        hash_val = int((hash_val + (data[i] * (i + 1))) % prime_mod)
     
     return format(hash_val & 0xFFFFFFFFFFFFFFFF, "x")

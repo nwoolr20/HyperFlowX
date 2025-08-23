@@ -4,6 +4,7 @@ import hashlib
 import xgboost as xgb
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
+from typing import Dict, Any
 
 from hyperflowx.sorting import hybrid_sort
 from hyperflowx.ml_model import train_hyperflowx
@@ -11,7 +12,7 @@ from hyperflowx.optimizations import adaptive_matrix_mult as fast_matrix_mult
 from hyperflowx.security import pascal_diamond_hash
 
 # 🚀 Benchmark Sorting Performance
-def benchmark_sorting():
+def benchmark_sorting() -> None:
     arr = np.random.randint(0, 1000000, 10_000_000)  # Large dataset
 
     # NumPy Timsort (Reference)
@@ -30,7 +31,7 @@ def benchmark_sorting():
     print(f"⚡ Speed Boost: {numpy_time / hyperflowx_time:.2f}× Faster!\n")
 
 # 🚀 Benchmark Machine Learning Performance
-def benchmark_ml():
+def benchmark_ml() -> None:
     X = np.random.rand(5000, 20)
     y = np.random.rand(5000)
 
@@ -55,7 +56,7 @@ def benchmark_ml():
         print(f"{name}: {elapsed:.4f} sec | MSE: {mse:.4f}")
 
 # 🚀 Benchmark Matrix Multiplication
-def benchmark_matrix_mult():
+def benchmark_matrix_mult() -> None:
     A = np.random.rand(1024, 1024)
     B = np.random.rand(1024, 1024)
 
@@ -75,7 +76,7 @@ def benchmark_matrix_mult():
     print(f"⚡ Speed Boost: {numpy_time / hyperflowx_time:.2f}× Faster!\n")
 
 # 🚀 Benchmark Hashing Algorithms
-def benchmark_hashing():
+def benchmark_hashing() -> None:
     data = np.random.bytes(256)
 
     # SHA-256 Benchmark
@@ -94,7 +95,7 @@ def benchmark_hashing():
     print(f"⚡ Speed Boost: {sha256_time / hfx_time:.2f}× Faster!\n")
 
 # 🚀 Save Benchmark Results
-def save_benchmark_results(results, filename="benchmark_results.json"):
+def save_benchmark_results(results: Dict[str, Any], filename: str = "benchmark_results.json") -> None:
     """Save benchmark results to a JSON file with timestamp."""
     import json
     from datetime import datetime
@@ -111,11 +112,11 @@ def save_benchmark_results(results, filename="benchmark_results.json"):
     print(f"📊 Results saved to {filename}")
 
 # 🚀 Run Benchmarks with Result Saving
-def run_full_benchmark(save_file="benchmark_results.json"):
+def run_full_benchmark(save_file: str = "benchmark_results.json") -> Dict[str, Any]:
     """Run all benchmarks and save results."""
     print("\n🚀 Running HyperFlowX Benchmarks...\n")
     
-    results = {}
+    results: Dict[str, Any] = {}
     
     # Sorting Benchmark
     arr = np.random.randint(0, 10000, 100000)
@@ -219,7 +220,7 @@ def run_full_benchmark(save_file="benchmark_results.json"):
     save_benchmark_results(results, save_file)
     return results
 
-def main():
+def main() -> None:
     """Main entry point for benchmark CLI."""
     run_full_benchmark()
 
