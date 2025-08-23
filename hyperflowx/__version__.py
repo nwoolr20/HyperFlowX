@@ -24,12 +24,12 @@ Key Value Propositions:
 __domain__ = "High-Performance Computing, Workflow Orchestration, Data Pipelines"
 __primary_use_cases__ = [
     "Large-scale data processing and analytics",
-    "Scientific computing and numerical simulations", 
+    "Scientific computing and numerical simulations",
     "Machine learning pipeline optimization",
     "Real-time data streaming and processing",
     "Bioinformatics and genomic data analysis",
-    "Financial modeling and risk analysis"
+    "Financial modeling and risk analysis",
 ]
 
 # Version tuple for programmatic access
-VERSION = tuple(map(int, __version__.split('.')))
+VERSION = tuple(map(int, __version__.split(".")))

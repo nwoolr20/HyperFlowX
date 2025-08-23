@@ -1,5 +1,6 @@
 """AI-powered automation utilities for HyperFlowX."""
 
+
 def automate_hyperflowx_fixes(repo_path: str) -> None:
     """Apply automated fixes to the HyperFlowX repository.
 

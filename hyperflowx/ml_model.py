@@ -17,16 +17,17 @@ from typing import Union, Any, Tuple, cast
 # 🚀 Simple Neural Network
 class NeuralNet(nn.Module):
     """Simple feedforward neural network for regression tasks.
-    
+
     Architecture:
         - Input layer (variable size)
         - Hidden layer 1: 128 neurons with ReLU activation
-        - Hidden layer 2: 64 neurons with ReLU activation  
+        - Hidden layer 2: 64 neurons with ReLU activation
         - Output layer: 1 neuron (regression)
     """
+
     def __init__(self, input_size: int):
         """Initialize neural network.
-        
+
         Args:
             input_size: Number of input features
         """
@@ -38,10 +39,10 @@ class NeuralNet(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass through the network.
-        
+
         Args:
             x: Input tensor
-            
+
         Returns:
             Output tensor
         """
@@ -53,24 +54,22 @@ class NeuralNet(nn.Module):
 
 # 🚀 Adaptive AI Model Selection
 def train_hyperflowx(
-    X: Union[np.ndarray, list], 
-    y: Union[np.ndarray, list], 
-    use_cuda: bool = True
+    X: Union[np.ndarray, list], y: Union[np.ndarray, list], use_cuda: bool = True
 ) -> Any:
     """Selects the best ML model dynamically based on data size.
-    
+
     Algorithm Selection Logic:
     - Small datasets (≤50 features): XGBoost (faster training, good performance)
     - Large datasets (>50 features): Neural Network (better capacity for complex patterns)
-    
+
     Args:
         X: Feature matrix (n_samples, n_features)
         y: Target vector (n_samples,)
         use_cuda: Whether to use GPU acceleration for neural networks
-        
+
     Returns:
         Trained model (either XGBRegressor or PyTorch model)
-        
+
     Note:
         Model selection is based on feature count. For production use,
         consider cross-validation and performance-based selection.
@@ -78,8 +77,10 @@ def train_hyperflowx(
     # Convert inputs to numpy arrays for consistent handling
     X = cast(np.ndarray, np.asarray(X))
     y = cast(np.ndarray, np.asarray(y))
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
     # 🔹 If dataset is small, use **XGBoost**
     if X.shape[1] <= 50:
